@@ -27,6 +27,9 @@ online curriculum. Here's a brief description of examples provided in this repos
 - **space_kit_tester** - This example reads from every sensor included in the Space Kit and outputs
     the results in JSON format for easy machine parsing/consumption. It also has temperature and
     light sensitive LEDs that turn on and off based on temperature readings.
+- **g_force_demo** - This example simply reads the `x`, `y`, and `z` axis data from the `LSM303`
+    accelerometer at a configurable interval and outputs the result as a JSON formated string that
+    is compatible with <https://demo.ardusat.com>
 
 # Getting Help
 
