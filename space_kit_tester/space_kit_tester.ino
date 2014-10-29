@@ -31,10 +31,8 @@
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 
-//IMU LSM303/l3GD20
 #include <Adafruit_LSM303_U.h>
 #include <Adafruit_L3GD20_U.h>
-//#include <Adafruit_9DOF.h>
 
 //TMP102 Temp
 #include <tmp102.h>
