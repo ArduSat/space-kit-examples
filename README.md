@@ -19,17 +19,25 @@ drive. Then, open up the Arduino IDE, go into the Preferences, and change the Sk
 this repository. After you save this change, you should be able to open one of the example sketches
 and hit the "check" button to compile it or the "arrow" button to compile and send to the Arduino.
 
+Start small - the single sensor examples found in `sensor_examples` are a great place to begin! Each
+of these focuses on a single sensor and demonstrates how to initialize the sensor and beging gathering
+data. 
+
 # Examples
 
 Check back frequently, since we'll be adding examples regularly as we expand our offerings and
 online curriculum. Here's a brief description of examples provided in this repository:
 
+- **sensor_examples** - This is a set of example sketches designed to demonstrate playing with individual
+    sensors in isolation. Each sketch measures a particular property (e.g. acceleration, temperature, etc.)
+    and does some form of manipulation with it, from turning LEDs on/off based on sensor values to 
+    outputting sensor data in JSON format readable by <http://demo.ardusat.com>
 - **space_kit_tester** - This example reads from every sensor included in the Space Kit and outputs
     the results in JSON format for easy machine parsing/consumption. It also has temperature and
     light sensitive LEDs that turn on and off based on temperature readings.
 - **g_force_demo** - This example simply reads the `x`, `y`, and `z` axis data from the `LSM303`
     accelerometer at a configurable interval and outputs the result as a JSON formated string that
-    is compatible with <https://demo.ardusat.com>
+    is compatible with <http://demo.ardusat.com>
 
 # Getting Help
 
