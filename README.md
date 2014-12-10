@@ -28,6 +28,8 @@ data.
 Check back frequently, since we'll be adding examples regularly as we expand our offerings and
 online curriculum. Here's a brief description of examples provided in this repository:
 
+- **basic_serial_test** - This example shows the most basic example of sending text data over the 
+    serial port. If successful, the Arduino Serial Monitor should print "Hello" over and over.
 - **sensor_examples** - This is a set of example sketches designed to demonstrate playing with individual
     sensors in isolation. Each sketch measures a particular property (e.g. acceleration, temperature, etc.)
     and does some form of manipulation with it, from turning LEDs on/off based on sensor values to 
@@ -38,6 +40,12 @@ online curriculum. Here's a brief description of examples provided in this repos
 - **g_force_demo** - This example simply reads the `x`, `y`, and `z` axis data from the `LSM303`
     accelerometer at a configurable interval and outputs the result as a JSON formated string that
     is compatible with <http://demo.ardusat.com>
+- **imu_example** - This example shows using the [Ardusat SDK](http://github.com/ArduSat/ArduSatSDK)
+    to read all 9 axes of the IMU. It should print values to the Serial Monitor every 5 seconds and 
+    is meant as an example to get started using the IMU data.
+- **ir_temp_example** - This sketch takes an IR temperature reading every 5 seconds and prints the 
+    results to the Serial Monitor. If the temperature detected is over 28.5 C, it turns on a pin 13
+    LED.
 
 # Getting Help
 
