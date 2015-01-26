@@ -6,7 +6,7 @@
  *    Description:  Simple driver for all the sensors included in the Ardusat
  *                  Space Kit. Outputs all sensor values at a configurable 
  *                  interval in JSON format that can be read by the Ardusat 
- *                  demo app (https://demo.ardusat.com).
+ *                  demo app (https://experiments.ardusat.com).
  *
  *                  This example uses many third-party libraries available from
  *                  Adafruit (https://github.com/adafruit). These libraries are
@@ -69,7 +69,7 @@ void setup() {
   beginInfraredTemperatureSensor();
   beginLuminositySensor();
   beginUVLightSensor();
-  beginOrientationSensor();
+  beginGyroSensor();
   beginMagneticSensor();
   
   // initialize the digital pins as outputs for the LEDs
@@ -101,6 +101,7 @@ void loop() {
   uvlight_t uv_light;
   acceleration_t accel;
   magnetic_t mag;
+  gyro_t gyro;
   orientation_t orientation;
   byte byteRead;
   float temp_val;
@@ -133,8 +134,12 @@ void loop() {
   serialConnection.println(magneticToJSON("magnetic", &mag));
   
   // Read Gyro
-  readOrientation(&orientation);
-  serialConnection.println(orientationToJSON("gyro", &orientation));
+  readGyro(&gyro);
+  serialConnection.println(gyroToJSON("gyro", &gyro));
+
+  // Calculate Orientation from Accel + Magnet data
+  calculateOrientation(&accel, &mag, &orientation); 
+  serialConnection.println(orientationToJSON("orientation", &orientation));
 
   // Read Temp from TMP102 (default in celcius)
   readTemperature(&temp);

@@ -103,6 +103,7 @@ int process_next_row(FILE *input, FILE *output)
   char val_buf[100];
   uint8_t sensor_id;
   uint32_t timestamp;
+  uint32_t timestamp_2;
 
   if (fread(buf, 1, 1, input) == 0) {
     return -1;
@@ -122,7 +123,7 @@ int process_next_row(FILE *input, FILE *output)
       sprintf(val_buf, "%f,%f,%f", *(float *)(buf + 6), 
               *(float *)(buf + 10), *(float *)(buf + 14));
       break;
-    case(ARDUSAT_SENSOR_TYPE_ORIENTATION):
+    case(ARDUSAT_SENSOR_TYPE_GYRO):
       get_data_struct(18, "gyro")
       sprintf(val_buf, "%f,%f,%f", *(float *)(buf + 6), 
               *(float *)(buf + 10), *(float *)(buf + 14));
@@ -139,6 +140,20 @@ int process_next_row(FILE *input, FILE *output)
       get_data_struct(10, "uv")
       sprintf(val_buf, "%f", *(float *)(buf + 6));
       break;
+    case (ARDUSAT_SENSOR_TYPE_ORIENTATION):
+      get_data_struct(18, "orientation")
+      sprintf(val_buf, "%f,%f,%f", *(float *)(buf + 6), 
+              *(float *)(buf + 10), *(float *)(buf + 14));
+      break;
+    case ((char) 0xFF):
+      // check if timestamp header
+      if (fread(buf + 1, 1, 1, input) == 0 || buf[1] != (char) 0xFF ||
+          fread(buf + 2, 1, 8, input) == 0 ) {
+        return -1;
+      }
+      timestamp = *((uint32_t *)(buf + 2));
+      timestamp_2 = *((uint32_t *)(buf + 6));
+      return fprintf(output, "timestamp: %u at millis %u\n", timestamp, timestamp_2) <= 0;
     default:
       printf("Unknown sensor type %d found!\n", buf[0]);
       return -1;

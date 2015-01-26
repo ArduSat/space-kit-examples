@@ -50,11 +50,20 @@ Read Function | Data Structure | Data Elements | Sensor
 --- | --- | --- | ---
 `readTemperature` | `temperature_t` | `t` | TMP102
 `readInfraredTemperature` | `temperature_t` | `t` | MLX90614
-`setupLuminositySensor` | `luminosity_t` | `lux` | TSL2561
-`setupAccelerationSensor` | `acceleration_t` | `x, y, z` | LSM303 (9DOF breakout)
-`setupMagneticSensor` | `magnetic_t` | `x, y, z` | LSM303 (9DOF breakout)
-`setupOrientationSensor` | `orientation_t` | `x, y, z` | L3GD20 (9DOF breakout)
-`setupUVLightSensor` | `uvlight_t` | `uvindex` | SI1145
+`readLuminosity` | `luminosity_t` | `lux` | TSL2561
+`readAcceleration` | `acceleration_t` | `x, y, z` | LSM303 (9DOF breakout)
+`readMagnetic` | `magnetic_t` | `x, y, z` | LSM303 (9DOF breakout)
+`readGyro` | `orientation_t` | `x, y, z` | L3GD20 (9DOF breakout)
+`readUVLight` | `uvlight_t` | `uvindex` | SI1145
+
+In addition to these `read` functions, a convenience function `calculateOrientation` is provided
+to calculate the 3-axis orientation from raw data from the accelerometer and magnetometer. This 
+function calculates `roll` (rotation about `x` axis), `pitch` (roation about `y` axis), and 
+`heading` (roation about `z` axis), and has the following signature:
+
+```
+void calculateOrientation(const acceleration_t *, const magnetic_t *, orientation_t *);
+```
 
 Usage example:
 ```
@@ -72,7 +81,7 @@ Serial.println(temp_data.t);
 
 ## Different Output Formats
 The Ardusat SDK can output sensor data in both JSON and CSV format to allow interfacing with
-external systems such as the [Demo Ardusat App](http://demo.ardusat.com). To use these functions,
+external systems such as the [Ardusat Experiment Platform](http://experiments.ardusat.com). To use these functions,
 call the `ToJSON` or `ToCSV` family of functions:
 
 ### JSON Format
@@ -193,6 +202,14 @@ specifies whether binary-format data logging (more space efficient, but must be 
 or CSV format (can be read by a wide variety of software, but takes up more space) will be used. 
 Binary formatted logs end in `.BIN`, CSV formatted logs end in `.CSV`. `beginDataLog` will return
 `true` if the log system was started successfully, `false` otherwise.
+
+If a Real Time Clock (RTC) chip is connected to the Arduino and set properly, the logging system
+will automatically read the current POSIX time (seconds since 1/1/1970) from the RTC, as well as the
+milliseconds since the Arduino started (`millis()`) and log both these values to the beginning of
+the log file. Since all subsequent values log milliseconds since the Arduino started (again, using
+`millis()`), this offset line can be used to translate these relative timestamps into absolute
+datetimes. The RTC chip used is the DS1307, and should be wired up on the I2C bus using `SDA` and
+`SCL` pins.
 
 After the logging system is started, the `writeX` and `binaryWriteX` functions can be used to
 actually write the binary data much like the `ToJSON` and `ToCSV` functions listed above. Binary and
