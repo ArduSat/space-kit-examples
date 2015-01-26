@@ -33,7 +33,7 @@ online curriculum. Here's a brief description of examples provided in this repos
 - **sensor_examples** - This is a set of example sketches designed to demonstrate playing with individual
     sensors in isolation. Each sketch measures a particular property (e.g. acceleration, temperature, etc.)
     and does some form of manipulation with it, from turning LEDs on/off based on sensor values to 
-    outputting sensor data in JSON format readable by <http://demo.ardusat.com>
+    outputting sensor data in JSON format readable by <http://experiments.ardusat.com>
 - **space_kit_tester** - This example reads from every sensor included in the Space Kit and outputs
     the results in JSON format for easy machine parsing/consumption. It also has temperature and
     light sensitive LEDs that turn on and off based on temperature readings.
