@@ -28,7 +28,12 @@ data.
 Check back frequently, since we'll be adding examples regularly as we expand our offerings and
 online curriculum. Here's a brief description of examples provided in this repository:
 
-- **basic_serial_test** - This example shows the most basic example of sending text data over the 
+- **drum_kit_multiaxis** - This example sketch uses accelerometer data from the 9DOF IMU to make
+    music. It does this by detecting "shake" events as shown by the total magnitude of acceleration,
+    then assigning a different instrument from a 5 piece drum kit sound library to each physical
+    axis. This demo can be used with <http://experiments.ardusat.com/#/sensors/drum-kit> to make
+    music by shaking the IMU!
+- **basic_serial_test** - This example shows the most basic example of sending text data over the
     serial port. If successful, the Arduino Serial Monitor should print "Hello" over and over.
 - **sensor_examples** - This is a set of example sketches designed to demonstrate playing with individual
     sensors in isolation. Each sketch measures a particular property (e.g. acceleration, temperature, etc.)
