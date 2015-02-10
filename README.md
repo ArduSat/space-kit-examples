@@ -33,6 +33,8 @@ online curriculum. Here's a brief description of examples provided in this repos
     then assigning a different instrument from a 5 piece drum kit sound library to each physical
     axis. This demo can be used with <http://experiments.ardusat.com/#/sensors/drum-kit> to make
     music by shaking the IMU!
+- **air_quality** - Example sketch that uses a PPD60 air quality sensor and calibration performed by
+    our friends at [Many Labs](http://www.manylabs.org/) to measure and log PM2.5 air quality.
 - **basic_serial_test** - This example shows the most basic example of sending text data over the
     serial port. If successful, the Arduino Serial Monitor should print "Hello" over and over.
 - **sensor_examples** - This is a set of example sketches designed to demonstrate playing with individual
