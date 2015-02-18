@@ -37,7 +37,8 @@ Function | Sensor | Config Arguments
 **beginAccelerationSensor** | LSM303 (9DOF breakout) | None
 **beginMagneticSensor** | LSM303 (9DOF breakout) | None
 **beginOrientationSensor** | L3GD20 (9DOF breakout) | None
-**beginUVLightSensor** | SI1145 | None
+**beginUVLightSensor** | ML8511 | None
+**beginBarometricPressureSensor** | BMP180 | None
 
 `begin` functions return `true` on success or `false` on failure.
 
@@ -51,15 +52,16 @@ Read Function | Data Structure | Data Elements | Sensor
 `readTemperature` | `temperature_t` | `t` | TMP102
 `readInfraredTemperature` | `temperature_t` | `t` | MLX90614
 `readLuminosity` | `luminosity_t` | `lux` | TSL2561
-`readAcceleration` | `acceleration_t` | `x, y, z` | LSM303 (9DOF breakout)
-`readMagnetic` | `magnetic_t` | `x, y, z` | LSM303 (9DOF breakout)
-`readGyro` | `orientation_t` | `x, y, z` | L3GD20 (9DOF breakout)
-`readUVLight` | `uvlight_t` | `uvindex` | SI1145
+`readAcceleration` | `acceleration_t` | `x, y, z` | LSM303 (10DOF breakout)
+`readMagnetic` | `magnetic_t` | `x, y, z` | LSM303 (10DOF breakout)
+`readGyro` | `orientation_t` | `x, y, z` | L3GD20 (10DOF breakout)
+`readUVLight` | `uvlight_t` | `uvindex` | ML8511
+`readBarometricPressure` | `pressure_t` | `pressure` | BMP180 (10DOF breakout)
 
 In addition to these `read` functions, a convenience function `calculateOrientation` is provided
 to calculate the 3-axis orientation from raw data from the accelerometer and magnetometer. This 
-function calculates `roll` (rotation about `x` axis), `pitch` (roation about `y` axis), and 
-`heading` (roation about `z` axis), and has the following signature:
+function calculates `roll` (rotation about `x` axis), `pitch` (rotation about `y` axis), and 
+`heading` (rotation about `z` axis), and has the following signature:
 
 ```
 void calculateOrientation(const acceleration_t *, const magnetic_t *, orientation_t *);
@@ -67,7 +69,7 @@ void calculateOrientation(const acceleration_t *, const magnetic_t *, orientatio
 
 Usage example:
 ```
-#import ArdusatSDK.H
+#import <ArdusatSDK.h>
 
 Serial.begin(9600);
 temperature_t temp_data;
@@ -78,6 +80,20 @@ if (!beginTemperatureSensor()) {
 readTemperature(&temp_data);
 Serial.println(temp_data.t);
 ```
+
+The Barometric Pressure sensor has two additional convenience functions to calculate altitude (which
+requires knowing the current sea level barometric pressure, a value that's easily available from
+weather observation data), or current sea level barometric pressure (which requires knowing the
+current altitude). For these convenience functions, altitude should be provided in meters, and
+pressure values should be provided in hPa.
+
+```
+float pressureToAltitude(float knownSeaLevelPressure, float measuredAtmosphericPressure);
+float seaLevelPressureForAltitude(float knownAltitude, float measuredAtmosphericPressure);
+```
+
+To translate meters to feet, multiply the meter value by `3.28084`. To translate feet to meters,
+multiply the feet value by `0.3084`.
 
 ## Different Output Formats
 The Ardusat SDK can output sensor data in both JSON and CSV format to allow interfacing with
@@ -177,6 +193,7 @@ pin that is often pin 10.
 **External SD Breakout Wiring**
 
 SD Breakout Pin | Arduino Pin
+--- | ---
 CLK | DIO13
 DO | DIO12
 DI | DIO11
@@ -221,36 +238,85 @@ display. The format is: `timestamp (ms),sensorName,values`. Note that unless a r
 is used, the Arduino has no ability to know the actual time, so `timestamp` will be the time in MS
 since the Arduino chip was started.
 
+### Logging Other Sensor Data
+If you have a custom sketch that includes data which doesn't fit into any of the ArdusatSDK-provided
+data structures, two convenience functions `valueToCSV` and `valuesToCSV` are provided to format
+generic `float` values into CSV strings. `valueToCSV` writes a single `float` to the CSV string,
+while `valuesToCSV` writes an array of strings. The output of these functions can be given to the
+`writeString` function to log the data to an SD card. Both `toCSV` functions take an optional
+`timestamp` argument - if this is not provided, the current time will be added to the CSV string
+using the `millis()` function.
+
+Usage example:
+
+```
+float mySingleValue;
+typedef struct {
+  float myValue1;
+  float myValue2;
+  float myValue3;
+} myValues_t;
+
+myValues_t myValues;
+
+mySingleValue = someMeasurementFunction();
+long currTime = millis();
+
+myValues.myValue1 = someOtherMeasurementFunction();
+myValues.myValue2 = another();
+myValues.myValue3 = thirdMeasurementFunction();
+
+writeString(valueToCSV("first_sensor", mySingleValue, currTime));
+writeString(valuesToCSV("my_vector_data", (float *) &myValues, 3));
+```
+
 ### Binary Data Format
 The binary data format allows data to be logged with less space on the SD card, enabling more data
 to be logged in the same space allotment. However, these binary data stamps must be decoded before
-they can be used by external data programs. To do this, a simple utility, `decode_binary.c` has been
-provided with the SDK. It must be compiled before use. On Mac OS X, this requires command line build
-utilities (`gcc`), on Linux the `gcc` compiler is usually included by default. This utility currently
-does not support Windows systems, but Cygwin can likely be used for compatibility, and we will be
-adding conversion support on the Ardusat website shortly.
+they can be used by external data programs. To do this, a simple Python-based utility,
+`decode_binary.py` has been provided with the SDK. On Mac OS X and Linux systems, Python should be
+installed already, but might need to be upgraded for pre Python 2.5 versions (fairly uncommon). On
+Windows, Python must be installed before the script can be used - go to 
+[Python Downloads](https://www.python.org/downloads/) to download an installer or newer version of
+Python. We will also be adding conversion support on the Ardusat website at some point.
 
-**Compile decode_binary with gcc (Mac OS X/Linux)**
-```
-cd /path/to/ArdusatSDK
-gcc decode_binary.c -o decode_binary
-```
+Once Python is installed, the utility can be used (run `python ./decode_binary.py --help` for usage 
+information) to translate the binary data into regular CSV data with the format. If no output path 
+is given, the output path will default to the filename of the binary file, saved to the current 
+working directory.
 
-Once the binary is compiled, it can be used (run ./decode_binary --help for usage information) to
-translate the binary data into regular CSV data with the format. If no output path is given, the output path will
-default to the filename of the binary file, saved to the current working directory.
+**decode_binary.py usage options**
 ```
->> ./decode_binary --help
+>> python ./decode_binary.py --help
+usage: decode_binary.py [-h] [-o,--output-file OUTPUT_FILE]
+                        [-s,--stop-on-error]
+                        input_file
+
 Decodes a binary data file created using the ArdusatSDK.
-usage: ./decode_binary [options] FILE
-Options:
-  -o,--output-file PATH          CSV file to write decoded data to
-  -h,--help                      Print this usage info.
->> ./decode_binary -o ./my-data.csv /Volumes/SD\ Card/DATA/MYLOG0.BIN
-Decoding file /Volumes/SD Card/DATA/MYLOG0.BIN and saving data to
-/Users/ardusat/Downloads/ArdusatSDK/my-data.csv...
-Finished decoding /Volumes/SD Card/DATA/MYLOG0.BIN. Saved 132 data observations to
-/Users/ardusat/Downloads/ArdusatSDK/my-data.csv.
+
+positional arguments:
+  input_file            Binary data file to decode
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o,--output-file OUTPUT_FILE
+                        CSV file to write decoded data to
+  -s,--stop-on-error    Stop decoding if unexpected bytes encountered
+```
+
+**Decode a binary data file (Mac OS X/Linux)**
+```
+>> python ./decode_binary.py -o my_data.csv MYDATA0.BIN
+Decoding MYDATA0.BIN (24516 bytes) and saving data to my_data.csv...
+Finished decoding MYDATA0.BIN, saved 1362 data observations to my_data.csv
+```
+
+**Decode a binary data file (Windows)**
+```
+>> C:\Python27\python.exe C:\ArdusatSDK\decode_binary.py -o C:\ArdusatSDK\my_data.csv
+C:\ArdusatSDK\MYDATA0.BIN
+Decoding C:\ArdusatSDK\MYDATA0.BIN (24516 bytes) and saving data to C:\ArdusatSDK\my_data.csv...
+Finished decoding C:\ArdusatSDK\MYDATA0.BIN, saved 1362 data observations to C:\ArdusatSDK\my_data.csv
 ```
 
 The actual data format for each time of data is described below, along with the number of bytes for

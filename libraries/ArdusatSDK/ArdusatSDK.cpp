@@ -16,25 +16,26 @@ SdVolume vol;
 #define _output_buffer vol.cacheAddress()->output_buf
 int _output_buf_len = 0;
 
-prog_char begin_error_msg[] PROGMEM = "Uh oh, begin%s failed. Check your wiring!";
-prog_char orientation_sensor_name[] PROGMEM = "Orientation";
-prog_char accel_sensor_name[] PROGMEM = "Acceleration";
-prog_char mag_sensor_name[] PROGMEM = "Magnetic";
-prog_char uv_sensor_name[] PROGMEM = "UVLight";
-prog_char luminosity_sensor_name[] PROGMEM = "Luminosity";
-prog_char temperature_sensor_name[] PROGMEM = "Temperature";
-prog_char ir_temperature_sensor_name[] PROGMEM = "IRTemperature";
+prog_char begin_error_msg[] = "Uh oh, begin%s failed. Check your wiring!";
+prog_char orientation_sensor_name[] = "Orientation";
+prog_char accel_sensor_name[] = "Acceleration";
+prog_char mag_sensor_name[] = "Magnetic";
+prog_char uv_sensor_name[] = "UVLight";
+prog_char luminosity_sensor_name[] = "Luminosity";
+prog_char temperature_sensor_name[] = "Temperature";
+prog_char ir_temperature_sensor_name[] = "IRTemperature";
+prog_char pressure_sensor_name[] = "BarometricPressureSensor";
 
 SdFat sd;
 File file;
-prog_char sd_card_error[] PROGMEM = "Not enough RAM for SD card sys(free: "; 
+prog_char sd_card_error[] = "Not enough RAM for SD card sys(free: ";
 
-char CSV_SEPARATOR = ',';
-char JSON_PREFIX = '~';
-char JSON_SUFFIX = '|';
-prog_char json_format[] PROGMEM = "%c{\"sensorName\":\"%s\", \"unit\":\"%s\", \"value\": %s}%c\n";
+static char CSV_SEPARATOR = ',';
+static char JSON_PREFIX = '~';
+static char JSON_SUFFIX = '|';
+prog_char json_format[] = "%c{\"sensorName\":\"%s\", \"unit\":\"%s\", \"value\": %s}%c\n";
 
-prog_char csv_header_fmt[] PROGMEM = "timestamp: %lu at millis %lu\n";
+prog_char csv_header_fmt[] = "timestamp: %lu at millis %lu\n";
 
 /**
  * Convert an enumerated unit code to a string representation.
@@ -66,6 +67,8 @@ const char * unit_to_str(uint8_t unit)
       return "mW/cm^2";
     case (DATA_UNIT_RADIAN):
       return "rad";
+    case (DATA_UNIT_HECTOPASCAL):
+      return "hPa";
     default:
       return "";
   };
@@ -81,7 +84,7 @@ const char * unit_to_str(uint8_t unit)
  *
  * @param sensorName name of sensor that failed.
  */
-void _beginError(const prog_char *sensorName)
+void _beginError(prog_char *sensorName)
 {
   char err_msg[50];
   char sensor[50];
@@ -267,6 +270,24 @@ void readGyro(gyro_t * output) {
   l3gd20h_getOrientation(&(output->x), &(output->y), &(output->z));
 }
 
+/*
+ * Barometric Pressure
+ */
+boolean beginBarometricPressureSensor() {
+  start_sensor_or_err(pressure_sensor_name, bmp180_init())
+}
+
+void readBarometricPressure(pressure_t *output)
+{
+  if (output == NULL)
+    return;
+  output->header.unit = DATA_UNIT_HECTOPASCAL;
+  output->header.timestamp = millis();
+
+  output->header.sensor_id = SENSORID_BMP180;
+  bmp180_getPressure(&output->pressure);
+}
+
 /**
  * Calculate the orientation (pitch, roll, heading) from raw magnetometer and
  * accelerometer readings.
@@ -278,7 +299,7 @@ void readGyro(gyro_t * output) {
  * @param mag Magnetometer reading to use in calculation
  * @param orient Orientation structure to save calculated orientation in
  */
-void calculateOrientation(const acceleration_t *accel, const magnetic_t *mag, 
+void calculateOrientation(const acceleration_t *accel, const magnetic_t *mag,
 			  orientation_t *orient)
 {
   const float PI_F = 3.141592653F;
@@ -344,6 +365,74 @@ const char * _headerToCSV(_data_header_t * header, const char *sensorName) {
     _output_buf_len = strlen(_output_buffer);
     _output_buffer[_output_buf_len++] = CSV_SEPARATOR;
   }
+
+  return _output_buffer;
+}
+
+/*
+ * Create a CSV string with a generic float value and a sensor name. Optional timestamp
+ * argument allows passing in a timestamp; will use millis() otherwise.
+ *
+ * @param sensorName string sensor name
+ * @param value value to write
+ * @param timestamp optional timestamp. If 0, millis() will be called.
+ *
+ * @return pointer to output buffer
+ */
+const char * valueToCSV(const char *sensorName, float value, unsigned long timestamp)
+{
+  return valuesToCSV(sensorName, &value, 1, timestamp);
+}
+
+/*
+ * Create a CSV string with a generic array of float values and a sensor name. Optional timestamp
+ * argument allows passing in a timestamp; will use millis() otherwise.
+ *
+ * @param sensorName string sensor name
+ * @param value array of float values to write
+ * @param numValues number of floats in array
+ * @param timestamp optional timestamp. If 0, millis() will be called.
+ *
+ * @return pointer to output buffer
+ */
+const char * valuesToCSV(const char *sensorName, float values[], int numValues, unsigned long timestamp)
+{
+  int i, name_len;
+
+  if (values == NULL)
+    return NULL;
+
+  if (timestamp == 0) {
+    timestamp = millis();
+  }
+
+  _output_buffer_reset();
+
+  ultoa(timestamp, _output_buffer, 10);
+  _output_buf_len = strlen(_output_buffer);
+  _output_buffer[_output_buf_len++] = CSV_SEPARATOR;
+
+  if (sensorName != NULL) {
+    if ((name_len = strlen(sensorName)) > 50) {
+      name_len = 50;
+    }
+    memcpy(&(_output_buffer[_output_buf_len]), sensorName, name_len);
+    _output_buf_len += name_len;
+    _output_buffer[_output_buf_len++] = CSV_SEPARATOR;
+  }
+
+  for (i = 0; i < numValues; ++i) {
+    if (_output_buf_len > OUTPUT_BUFFER_MAXSIZE - 10) {
+      break;
+    }
+    dtostrf(values[i], 2, 3, _output_buffer + _output_buf_len);
+    _output_buf_len = strlen(_output_buffer);
+    if (i != numValues - 1) {
+      _output_buffer[_output_buf_len++] = CSV_SEPARATOR;
+    }
+  }
+
+  _output_buffer[_output_buf_len++] = '\n';
 
   return _output_buffer;
 }
@@ -472,13 +561,27 @@ const char *orientationToCSV(const char *sensorName, orientation_t *input)
   return _output_buffer;
 }
 
+const char *pressureToCSV(const char *sensorName, pressure_t *input)
+{
+  if (input == NULL)
+    return NULL;
+
+  _headerToCSV(&(input->header), sensorName);
+
+  dtostrf(input->pressure, 2, 3, _output_buffer + _output_buf_len);
+  _output_buf_len = strlen(_output_buffer);
+  _output_buffer[_output_buf_len++] = '\n';
+
+  return _output_buffer;
+}
+
 /*
  * toJSON output functions 
  */
 int _writeJSONValue(char *buf, const char *sensor_name, const char *unit, float value)
 {
-  char num [10];
-  char format_str[80]; 
+  char num [32];
+  char format_str[80];
   // inexact estimate on the number of characters the value will take up...
   if (strlen(sensor_name) + strlen(unit) + 10 + _output_buf_len > OUTPUT_BUFFER_MAXSIZE) {
     return -1;
@@ -493,7 +596,7 @@ int _writeJSONValue(char *buf, const char *sensor_name, const char *unit, float 
 const char * valueToJSON(const char *sensor_name, uint8_t unit, float value)
 {
   _output_buffer_reset();
-  _writeJSONValue(_output_buffer, sensor_name, unit_to_str(unit), value); 
+  _writeJSONValue(_output_buffer, sensor_name, unit_to_str(unit), value);
   return _output_buffer;
 }
 
@@ -501,7 +604,7 @@ const char * accelerationToJSON(const char *sensor_name, acceleration_t *acceler
 {
   int nameLength = strlen(sensor_name);
   char nameBuf[nameLength + 2];
-  _output_buffer_reset();	
+  _output_buffer_reset();
 
   sprintf(nameBuf, "%sX", sensor_name);
   _writeJSONValue(_output_buffer, nameBuf, unit_to_str(acceleration->header.unit),
@@ -519,7 +622,7 @@ const char * magneticToJSON(const char *sensor_name, magnetic_t *mag)
 {
   int nameLength = strlen(sensor_name);
   char nameBuf[nameLength + 2];
-  _output_buffer_reset();	
+  _output_buffer_reset();
 
   sprintf(nameBuf, "%sX", sensor_name);
   _writeJSONValue(_output_buffer, nameBuf, unit_to_str(mag->header.unit),
@@ -537,7 +640,7 @@ const char * gyroToJSON(const char *sensor_name, gyro_t *orient)
 {
   int nameLength = strlen(sensor_name);
   char nameBuf[nameLength + 8];
-  _output_buffer_reset();	
+  _output_buffer_reset();
 
   sprintf(nameBuf, "%sX", sensor_name);
   _writeJSONValue(_output_buffer, nameBuf, unit_to_str(orient->header.unit),
@@ -576,7 +679,7 @@ const char *orientationToJSON(const char *sensor_name, orientation_t *orient)
 {
   int nameLength = strlen(sensor_name);
   char nameBuf[nameLength + 8];
-  _output_buffer_reset();	
+  _output_buffer_reset();
 
   sprintf(nameBuf, "%sRoll", sensor_name);
   _writeJSONValue(_output_buffer, nameBuf, unit_to_str(orient->header.unit),
@@ -590,18 +693,23 @@ const char *orientationToJSON(const char *sensor_name, orientation_t *orient)
   return _output_buffer;
 }
 
-#define write_if_init(gen_fn) return _write_from_output_buf(gen_fn);
+const char *pressureToJSON(const char *sensorName, pressure_t *pressure)
+{
+  _output_buffer_reset();
+  _writeJSONValue(_output_buffer, sensorName, unit_to_str(pressure->header.unit), pressure->pressure);
+  return _output_buffer;
+}
+
+#define write_if_init(gen_fn) return writeString(gen_fn);
 
 /**
- * Helper function to write output buffer to file. This function is necessary
- * because we share the output buffer between the SD card library and this file
- * but to actually perform the SD card write we need to allocate another buffer.
+ * Helper function to write null-terminated output buffer string to file. 
  *
- * @param output_buf pointer to output buffer
+ * @param output_buf pointer to output buffer to write.
  *
  * @return number of bytes written
  */
-int _write_from_output_buf(const char *output_buf)
+int writeString(const char *output_buf)
 {
   int buf_len = strlen(output_buf);
   return writeBytes((const uint8_t *) output_buf, buf_len);
@@ -764,6 +872,19 @@ int writeOrientation(const char *sensorName, orientation_t *data)
   write_if_init(orientationToCSV(sensorName, data))
 }
 
+/**
+ * Writes a line of CSV formatted pressure data to SD card.
+ *
+ * @param sensorName of this sensor
+ * @param data pressure_t data to write
+ *
+ * @return number of bytes written
+ */
+int writePressure(const char *sensorName, pressure_t *data)
+{
+  write_if_init(pressureToCSV(sensorName, data))
+}
+
 #define init_data_struct(type_def, type_enum) \
   type_def bin_data; \
   bin_data.type = type_enum; \
@@ -834,6 +955,14 @@ int binaryWriteOrientation(const uint8_t sensorId, orientation_t *data)
   bin_data.heading = data->heading;
 
   _write_binary_data_struct(orientation_bin_t)
+}
+
+int binaryWritePressure(const uint8_t sensorId, pressure_t *data)
+{
+  init_data_struct(pressure_bin_t, ARDUSAT_SENSOR_TYPE_PRESSURE)
+  bin_data.pressure = data->pressure;
+
+  _write_binary_data_struct(pressure_bin_t)
 }
 
 /**

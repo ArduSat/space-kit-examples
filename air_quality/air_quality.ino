@@ -41,7 +41,14 @@ volatile unsigned long pulseStart = 0;
 // accumulator variable
 volatile unsigned long totalPulseDuration = 0;
 
-float dustDetectedRatio = 0.0;
+typedef struct{
+  float dustDetectedRatio;
+  float count;
+  float pm25;
+} airQualityData_t;
+
+airQualityData_t airData = { 0.0 };
+
 char outputBuffer[64];
 int outputBufferPosition;
 
@@ -201,26 +208,30 @@ void loop () {
   if (time - lastAvgTime > AVERAGING_MS) {
 
     // Compute low pulse occupancy - multiply by 1000 to convert to microseconds
-    dustDetectedRatio = totalPulseDuration / (float)( (time - lastAvgTime) * 1000 );
+    airData.dustDetectedRatio = totalPulseDuration / (float)( (time - lastAvgTime) * 1000 );
     totalPulseDuration = 0;
     lastAvgTime = time;
 
     // This count estimate comes from co-locating the PPD60 with a Dylos DC1700
     // and fitting a quadratic curve to the data
-    float count = 79740.9269 * (dustDetectedRatio * dustDetectedRatio) + 10175.6562 * dustDetectedRatio + 213.9981;
+    airData.count = 79740.9269 * (airData.dustDetectedRatio * airData.dustDetectedRatio) +
+                    10175.6562 * airData.dustDetectedRatio + 213.9981;
 
     float humidity = 50.0; // Replace with a real humidity sensor value
-    float pm25 = dustCountToPM25(count, humidity);
+    airData.pm25 = dustCountToPM25(airData.count, humidity);
 
     // Save values to SD card
+#if 0
     writeBytes((uint8_t *)airQualityValuesToCSV(lastAvgTime, dustDetectedRatio, count, pm25),
                outputBufferPosition);
+#endif
+    writeString(valuesToCSV(NULL, &airData.dustDetectedRatio, 3, lastAvgTime));
 
     // Print values to Serial console for debugging
-    Serial.print(dustDetectedRatio, 4);
+    Serial.print(airData.dustDetectedRatio, 4);
     Serial.print("\t\t");
-    Serial.print(count, 4);
+    Serial.print(airData.count, 4);
     Serial.print("\t");
-    Serial.println(pm25, 4);
+    Serial.println(airData.pm25, 4);
   }
 }
