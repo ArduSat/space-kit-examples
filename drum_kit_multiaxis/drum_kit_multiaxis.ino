@@ -38,7 +38,7 @@
  * RX is digital pin 10 (connect to TX/DOUT of RF Device)
  * TX is digital pin 11 (connect to RX/DIN of RF Device)
  *-----------------------------------------------------------------------------*/
-ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 10, 11);
+ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 8,9);
 
 /*-----------------------------------------------------------------------------
  *  Constant Definitions
