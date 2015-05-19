@@ -41,18 +41,15 @@ online curriculum. Here's a brief description of examples provided in this repos
     sensors in isolation. Each sketch measures a particular property (e.g. acceleration, temperature, etc.)
     and does some form of manipulation with it, from turning LEDs on/off based on sensor values to 
     outputting sensor data in JSON format readable by <http://experiments.ardusat.com>
-- **space_kit_tester** - This example reads from every sensor included in the Space Kit and outputs
-    the results in JSON format for easy machine parsing/consumption. It also has temperature and
-    light sensitive LEDs that turn on and off based on temperature readings.
+- **space_kit_tester** - example moved to: <https://github.com/ArduSat/ArdusatSDK/tree/master/examples/space_kit_tester>
 - **g_force_demo** - This example simply reads the `x`, `y`, and `z` axis data from the `LSM303`
     accelerometer at a configurable interval and outputs the result as a JSON formated string that
     is compatible with <http://demo.ardusat.com>
 - **imu_example** - This example shows using the [Ardusat SDK](http://github.com/ArduSat/ArduSatSDK)
     to read all 9 axes of the IMU. It should print values to the Serial Monitor every 5 seconds and 
     is meant as an example to get started using the IMU data.
-- **ir_temp_example** - This sketch takes an IR temperature reading every 5 seconds and prints the 
-    results to the Serial Monitor. If the temperature detected is over 28.5 C, it turns on a pin 13
-    LED.
+- **sine_wave** - Example that plots a sine wave and uses the generic valueToJSON formating from Ardusat experiment platform.  Requires no wiring of sensors to demonstrate the graphing, logging and Theremin view.  Learn out the Arduino Math library <http://www.arduino.cc/en/Math/H>
+
 
 # Getting Help
 
