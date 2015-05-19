@@ -41,9 +41,7 @@ online curriculum. Here's a brief description of examples provided in this repos
     sensors in isolation. Each sketch measures a particular property (e.g. acceleration, temperature, etc.)
     and does some form of manipulation with it, from turning LEDs on/off based on sensor values to 
     outputting sensor data in JSON format readable by <http://experiments.ardusat.com>
-- **space_kit_tester** - This example reads from every sensor included in the Space Kit and outputs
-    the results in JSON format for easy machine parsing/consumption. It also has temperature and
-    light sensitive LEDs that turn on and off based on temperature readings.
+- **space_kit_tester** - example moved to: <https://github.com/ArduSat/ArdusatSDK/tree/master/examples/space_kit_tester>
 - **g_force_demo** - This example simply reads the `x`, `y`, and `z` axis data from the `LSM303`
     accelerometer at a configurable interval and outputs the result as a JSON formated string that
     is compatible with <http://demo.ardusat.com>
