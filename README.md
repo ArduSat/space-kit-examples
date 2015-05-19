@@ -50,9 +50,8 @@ online curriculum. Here's a brief description of examples provided in this repos
 - **imu_example** - This example shows using the [Ardusat SDK](http://github.com/ArduSat/ArduSatSDK)
     to read all 9 axes of the IMU. It should print values to the Serial Monitor every 5 seconds and 
     is meant as an example to get started using the IMU data.
-- **ir_temp_example** - This sketch takes an IR temperature reading every 5 seconds and prints the 
-    results to the Serial Monitor. If the temperature detected is over 28.5 C, it turns on a pin 13
-    LED.
+- **sine_wave** - Example that plots a sine wave and uses the generic valueToJSON formating from Ardusat experiment platform.  Requires no wiring of sensors to demonstrate the graphing, logging and Theremin view.  Learn out the Arduino Math library <http://www.arduino.cc/en/Math/H>
+
 
 # Getting Help
 
