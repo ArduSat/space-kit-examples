@@ -44,7 +44,7 @@ ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 8, 9);
 /*-----------------------------------------------------------------------------
  *  Constant Definitions
  *-----------------------------------------------------------------------------*/
-#define BEAT 250         // Time, in ms, to wait between logging
+#define BEAT 500         // Time, in ms, to wait between logging
 #define NUM_ELEMENTS 6   // Number of sounds per instrument
 #define EXP_MAX 65.0     // Assumed maximum temperature reading in Celsius
 #define EXP_MIN 5.0      // Assumed minimum temperature reading in Celsius

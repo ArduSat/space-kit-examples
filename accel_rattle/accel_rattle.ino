@@ -63,28 +63,28 @@ prog_char iA5[] = "tom3";
 prog_char iA6[] = "kick";
 
 // Instrument two sounds
-prog_char iB1[] = "Resonant_FM_laser2";
-prog_char iB2[] = "babylaugh2";
-prog_char iB3[] = "cowbell1_big";
-prog_char iB4[] = "cat3";
-prog_char iB5[] = "woodblock_pitched-ti";
-prog_char iB6[] = "babyuhoh";
+prog_char iB1[] = "cow";
+prog_char iB2[] = "duck1";
+prog_char iB3[] = "cat3";
+prog_char iB4[] = "dog1";
+prog_char iB5[] = "bird2";
+prog_char iB6[] = "chicken";
 
 // Instrument three sounds
-prog_char iC1[] = "c1";
-prog_char iC2[] = "f1";
-prog_char iC3[] = "d1";
-prog_char iC4[] = "e1";
-prog_char iC5[] = "g1";
-prog_char iC6[] = "a1";
+prog_char iC1[] = "Resonant_FM_laser1";
+prog_char iC2[] = "Resonant_FM_laser2";
+prog_char iC3[] = "cowbell1_big";
+prog_char iC4[] = "cowbell2_small";
+prog_char iC5[] = "babylaugh1";
+prog_char iC6[] = "babylaugh2";
 
 // Instrument four sounds
-prog_char iD1[] = "sitar1";
-prog_char iD2[] = "sitar2";
-prog_char iD3[] = "sitar3";
-prog_char iD4[] = "sitar4";
-prog_char iD5[] = "sitar5";
-prog_char iD6[] = "sitar6";
+prog_char iD1[] = "zelda1";
+prog_char iD2[] = "zelda2";
+prog_char iD3[] = "zelda3";
+prog_char iD4[] = "zelda4";
+prog_char iD5[] = "zelda5";
+prog_char iD6[] = "zelda1";
 
 // Combine available sounds into less verbose structure
 const char* const instr1[NUM_ELEMENTS] PROGMEM = {iA1, iA2, iA3, iA4, iA5, iA6};

@@ -46,18 +46,20 @@ ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 8, 9);
 #define NUM_X_ELEMENTS 6    // Number of sounds per instrument X
 #define NUM_Y_ELEMENTS 12   // Number of sounds per instrument Y
 #define NUM_Z_ELEMENTS 11   // Number of sounds per instrument Z
+#define BEAT 100            // Time, in ms, to wait between logging
+unsigned long lastBeat = 0;
 
 // See link for PROGMEM documentation:
 // http://www.arduino.cc/en/Reference/PROGMEM
 #define prog_char const char PROGMEM // Used to store strings in flash memory, not SRAM
 
 // Instrument X sounds
-prog_char iA1[] = "AltoSaxF4";
-prog_char iA2[] = "AltoSaxE4";
-prog_char iA3[] = "AltoSaxD4";
-prog_char iA4[] = "AltoSaxC4";
-prog_char iA5[] = "AltoSaxB4";
-prog_char iA6[] = "AltoSaxAb4";
+prog_char iA1[] = "sitar1";
+prog_char iA2[] = "sitar2";
+prog_char iA3[] = "sitar3";
+prog_char iA4[] = "sitar4";
+prog_char iA5[] = "sitar5";
+prog_char iA6[] = "sitar6";
 
 // Instrument Y sounds
 prog_char iB1[] = "c1";
@@ -181,18 +183,19 @@ void loop() {
   readGyro(&gyro);
 
   // Get the max absolute value among the gyro readings per axis
-  max_spin_mag = max(max(abs(gyro.x), abs(gyro.y)), max(abs(gyro.x), abs(gyro.z)));
+  max_spin_mag = max(max(fabs(gyro.x), fabs(gyro.y)), max(fabs(gyro.x), fabs(gyro.z)));
 
   // Only care if max rotational speed is above a small amount to ignore small
   // shakes and other vibrations
-  if (max_spin_mag > 0.5) {
+  if (max_spin_mag > 0.5 && (millis() - lastBeat) > BEAT) {
     // Only play sounds for the axis that has the most rotational speed
-    if (abs(gyro.x) == max_spin_mag) {
+    if (fabs(gyro.x) == max_spin_mag) {
       make_sound(instrx, NUM_X_ELEMENTS, gyro.x);
-    } else if (abs(gyro.y) == max_spin_mag) {
+    } else if (fabs(gyro.y) == max_spin_mag) {
       make_sound(instry, NUM_Y_ELEMENTS, gyro.y);
     } else {
       make_sound(instrz, NUM_Z_ELEMENTS, gyro.z);
     }
+    lastBeat = millis();
   }
 }

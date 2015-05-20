@@ -44,7 +44,7 @@ ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 8, 9);
 /*-----------------------------------------------------------------------------
  *  Constant Definitions
  *-----------------------------------------------------------------------------*/
-#define BEAT 50   // Time, in ms, to wait between logging
+#define BEAT 75   // Time, in ms, to wait between logging
 unsigned long lastBeat = 0;
 
 
@@ -86,7 +86,7 @@ void loop() {
 
   // Play the sound only once per BEAT when the magnetic magnitude is high enough
   if (mag_mag > 111.0 && (millis() - lastBeat) > BEAT) {
-    serialConnection.println(valueToJSON("sitar3", DATA_UNIT_NONE, 1));
+    serialConnection.println(valueToJSON("sitar1", DATA_UNIT_NONE, 1));
     lastBeat = millis();
   }
 }
