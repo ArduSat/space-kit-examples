@@ -11,7 +11,7 @@ sensors as quickly as possible.
 
 The first step to getting going is to install the Arduino Integrated Development Environment (IDE).
 Downloads for all major OS versions can be found at
-[http://arduino.cc/en/Main/Software](http://arduino.cc/en/Main/Software). 
+[http://arduino.cc/en/Main/Software](http://arduino.cc/en/Main/Software).
 
 After installing the IDE, use the link on the right side of this page to download the example
 repository in the format of your choice, and make sure you know where you save it on your hard
@@ -21,7 +21,7 @@ and hit the "check" button to compile it or the "arrow" button to compile and se
 
 Start small - the single sensor examples found in `sensor_examples` are a great place to begin! Each
 of these focuses on a single sensor and demonstrates how to initialize the sensor and beging gathering
-data. 
+data.
 
 # Examples
 
@@ -41,9 +41,7 @@ online curriculum. Here's a brief description of examples provided in this repos
     sensors in isolation. Each sketch measures a particular property (e.g. acceleration, temperature, etc.)
     and does some form of manipulation with it, from turning LEDs on/off based on sensor values to 
     outputting sensor data in JSON format readable by <http://experiments.ardusat.com>
-- **space_kit_tester** - This example reads from every sensor included in the Space Kit and outputs
-    the results in JSON format for easy machine parsing/consumption. It also has temperature and
-    light sensitive LEDs that turn on and off based on temperature readings.
+- **space_kit_tester** - example moved to: <https://github.com/ArduSat/ArdusatSDK/tree/master/examples/space_kit_tester>
 - **g_force_demo** - This example simply reads the `x`, `y`, and `z` axis data from the `LSM303`
     accelerometer at a configurable interval and outputs the result as a JSON formated string that
     is compatible with <http://demo.ardusat.com>
@@ -69,6 +67,7 @@ online curriculum. Here's a brief description of examples provided in this repos
     magnetic force. The magnetometer was placed above a rig with a magnet taped to the center of a
     stretched rubber band. This sketch is designed to work with the
     [Experiment Platform Drum Kit](http://experiments.ardusat.com/#/sensors/drum-kit).
+- **sine_wave** - Example that plots a sine wave and uses the generic valueToJSON formating from Ardusat experiment platform.  Requires no wiring of sensors to demonstrate the graphing, logging and Theremin view.  Learn out the Arduin    o Math library <http://www.arduino.cc/en/Math/H>
 
 # Getting Help
 
@@ -76,7 +75,7 @@ If you're having trouble running the examples, chances are something is messed u
 library locations in your Arduino IDE. Double check that the Sketchbook location is pointed at the
 repository folder (e.g. `/Users/me/Documents/space-kit-examples`). If the sketches are compiling and
 uploading but not behaving as expected, make sure you double check your wiring, it's always easy to
-accidentally plug something in wrong! 
+accidentally plug something in wrong!
 
 If you get really stuck, feel free to reach out at <support@ardusat.com>, or the "Issues" section of
 this repository.
