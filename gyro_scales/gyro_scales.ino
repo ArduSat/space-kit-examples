@@ -76,17 +76,17 @@ prog_char iB11[] = "a1s";
 prog_char iB12[] = "b1";
 
 // Instrument Z sounds
-prog_char iC1[] = "MusicalGlasses2";
-prog_char iC2[] = "MusicalGlasses3";
-prog_char iC3[] = "MusicalGlasses4";
-prog_char iC4[] = "MusicalGlasses5";
-prog_char iC5[] = "MusicalGlasses6";
-prog_char iC6[] = "MusicalGlasses7";
-prog_char iC7[] = "MusicalGlasses8";
-prog_char iC8[] = "MusicalGlasses9";
-prog_char iC9[] = "MusicalGlasses10";
-prog_char iC10[] = "MusicalGlasses11";
-prog_char iC11[] = "MusicalGlasses12";
+prog_char iC1[] = "glass2";
+prog_char iC2[] = "glass3";
+prog_char iC3[] = "glass4";
+prog_char iC4[] = "glass5";
+prog_char iC5[] = "glass6";
+prog_char iC6[] = "glass7";
+prog_char iC7[] = "glass8";
+prog_char iC8[] = "glass9";
+prog_char iC9[] = "glass10";
+prog_char iC10[] = "glass11";
+prog_char iC11[] = "glass12";
 
 // Combine available sounds into less verbose structure
 const char* const instrx[NUM_X_ELEMENTS] PROGMEM = {iA1, iA2, iA3, iA4, iA5, iA6};
