@@ -8,6 +8,9 @@
  *                  interval in JSON format that can be read by the Ardusat 
  *                  demo app (https://experiments.ardusat.com).
  *
+ *                  Example returns json values for all of the sensors available
+ *                  from just the IMU.
+ *
  *                  This example uses many third-party libraries available from
  *                  Adafruit (https://github.com/adafruit). These libraries are
  *                  mostly under an Apache License, Version 2.0.
