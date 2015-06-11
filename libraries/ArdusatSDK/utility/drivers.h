@@ -20,19 +20,22 @@
 #include <Arduino.h>
 #include <utility/mlx90614.h>
 #include <utility/Adafruit_Sensor.h>
-#include <utility/Adafruit_LSM303_U.h>
 #include <utility/Adafruit_L3GD20_U.h>
 #include <utility/Adafruit_SI1145.h>
 #include <utility/BMP180.h>
 #include <utility/TSL2561.h>
+#include <utility/pololu_LSM303.h>
 
-#define DRIVER_TSL2561_ADDR		0x39
-#define DRIVER_TMP102_ADDR		0x48
-#define DRIVER_MLX90614_ADDR	0x5A
-#define DRIVER_SI1145_ADDR		0x60
-#define DRIVER_BMP180_ADDR    0x77
-#define DRIVER_ML8511_UV_PIN A0
-#define DRIVER_ML8511_REF_PIN A1
+#define DRIVER_TSL2561_ADDR		          0x39 // 0x49 for lemsens
+#define DRIVER_LEMSENS_TSL2561_ADDR		  0x49 // (lemsens)
+#define DRIVER_TMP102_ADDR		          0x48 // 0x4B for lemsens
+#define DRIVER_LEMSENS_TMP102_1_ADDR		0x4B // (lemsens)
+#define DRIVER_MLX90614_ADDR	          0x5A
+#define DRIVER_SI1145_ADDR		          0x60
+#define DRIVER_BMP180_ADDR              0x77
+#define DRIVER_LSM303_DTR_ADDR          0x1E
+#define DRIVER_ML8511_UV_PIN            A0
+#define DRIVER_ML8511_REF_PIN           A1
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,6 +47,40 @@ extern "C" {
  *
  * http://www.adafruit.com/product/1714
  */
+typedef enum {
+  LSM303_ACCEL_GAIN2G =  0b00000000,
+  LSM303_ACCEL_GAIN4G =  0b00001000,
+  LSM303_ACCEL_GAIN6G =  0b00010000,
+  LSM303_ACCEL_GAIN8G =  0b00011000,
+  LSM303_ACCEL_GAIN16G = 0b00100000,
+} lsm303_accel_gain_e;
+
+typedef enum {
+  LSM303_MAG_SCALE1_3GAUSS = 0b10000000,
+  LSM303_MAG_SCALE2GAUSS =   0b00000000,
+  LSM303_MAG_SCALE2_5GAUSS = 0b10000001,
+  LSM303_MAG_SCALE4GAUSS =   0b00100000,
+  LSM303_MAG_SCALE4_7GAUSS = 0b10100000,
+  LSM303_MAG_SCALE5_6GAUSS = 0b10100001,
+  LSM303_MAG_SCALE8GAUSS =   0b01000000,
+  LSM303_MAG_SCALE12GAUSS =  0b01100000,
+} lsm303_mag_scale_e;
+#define SENSORS_MGAUSS_TO_UTESLA 0.1F
+
+typedef struct
+{
+  lsm303_accel_gain_e gain;
+} config_lsm303_accel_t;
+
+typedef struct
+{
+  lsm303_mag_scale_e scale;
+} config_lsm303_mag_t;
+
+typedef struct {
+  uint8_t sensitivity;
+} config_l3gd20_t;
+
 boolean l3gd20h_init();
 void l3gd20h_getOrientation(float *x, float *y, float *z);
 void l3gd20h_getRawAngularRates(int16_t *pX, int16_t *pY, int16_t *pZ);
@@ -78,7 +115,7 @@ float seaLevelPressureForAltitude(float altitude, float atmosphericPressure);
  * https://www.sparkfun.com/products/12705
  */
 boolean ml8511_init();
-float ml8511_getUV();
+float ml8511_getUV(int pin);
 
 /**
  * SI1145 breakout board is a UV/Light sensor from Adafruit. It was included in earlier

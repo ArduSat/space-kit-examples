@@ -4,8 +4,8 @@
  *       Filename:  space_kit_tester.ino
  *
  *    Description:  Simple driver for all the sensors included in the Ardusat
- *                  Space Kit. Outputs all sensor values at a configurable 
- *                  interval in JSON format that can be read by the Ardusat 
+ *                  Space Kit. Outputs all sensor values at a configurable
+ *                  interval in JSON format that can be read by the Ardusat
  *                  demo app (https://experiments.ardusat.com).
  *
  *                  This example uses many third-party libraries available from
@@ -32,7 +32,7 @@
 #include <Wire.h>
 #include <ArdusatSDK.h>
 
-ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 10, 11);
+ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 8,9);
 
 /*-----------------------------------------------------------------------------
  *  Constant Definitions
@@ -52,10 +52,15 @@ ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 10, 11);
 #define UVOUT A0 //Output from the UV sensor
 #define REF_3V3 A1 // 3.3V power on the Arduino board
 
-/* 
+// Barometer settings
+#define MY_ALTITUDE_FEET 4300
+float myAltitude;
+float currentSeaLevelPressure = 1026.8;
+
+/*
  * ===  FUNCTION  ======================================================================
  *         Name:  setup
- *  Description:  This function runs when the Arduino first turns on/resets. This is 
+ *  Description:  This function runs when the Arduino first turns on/resets. This is
  *                our chance to take care of all one-time configuration tasks to get
  *                the program ready to begin logging data.
  * =====================================================================================
@@ -71,6 +76,8 @@ void setup() {
   beginUVLightSensor();
   beginGyroSensor();
   beginMagneticSensor();
+  beginBarometricPressureSensor();
+  myAltitude = MY_ALTITUDE_FEET * 0.3048;
 
   // initialize the digital pins as outputs for the LEDs
   pinMode(LED_TMP102, OUTPUT);
@@ -83,13 +90,12 @@ void setup() {
   pinMode(REF_3V3, INPUT);
 
   /* We're ready to go! */
-  serialConnection.println("");
 }
 
-/* 
+/*
  * ===  FUNCTION  ======================================================================
  *         Name:  loop
- *  Description:  After setup runs, this loop function runs until the Arduino loses 
+ *  Description:  After setup runs, this loop function runs until the Arduino loses
  *                power or resets. We go through and update each of the attached sensors,
  *                write out the updated values in JSON format, then delay before repeating
  *                the loop again.
@@ -106,6 +112,10 @@ void loop() {
   byte byteRead;
   float temp_val;
   float infrared_temp;
+  pressure_t pressure;
+  uint16_t rawTemp;
+  uint32_t rawPressure;
+  float tempIMU;
 
   // To test sending serial data from the computer, we can turn the serialConnection Read
   // LED on or off
@@ -174,9 +184,17 @@ void loop() {
     }
   }
 
-  // Read MP8511 UV 
+  // Read MP8511 UV
   readUVLight(&uv_light);
   serialConnection.println(uvlightToJSON("uv", &uv_light));
+
+  //  Read Barometer BMP180
+  readBarometricPressure(&pressure);
+  bmp180_getRawTemperature(&rawTemp);
+  bmp180_getTemperature(&tempIMU);
+  bmp180_getRawPressure(&rawPressure);
+  Serial.println(pressureToJSON("pressure", &pressure));
+  Serial.println(valueToJSON("tempIMU",4,tempIMU)); // data type 4 = Degrees C
 
   delay(READ_INTERVAL);
 }
