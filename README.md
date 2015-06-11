@@ -69,6 +69,9 @@ online curriculum. Here's a brief description of examples provided in this repos
 - **sine_wave** - This example that plots a sine wave and uses the generic valueToJSON formating from Ardusat
     experiment platform. Requires no wiring of sensors to demonstrate the graphing, logging and Theremin
     view. Learn about the Arduino Math library <http://www.arduino.cc/en/Math/H>
+- **imu_all_sensors** - This example returns json values for all of the sensors available from just the IMU.
+- **mary_had_a_little_lamb** - This example doesn't use any sensors, but demonstrates how to play
+    Mary Had a Little Lamb using an Arduino and the Ardusat Experiment Platform.
 
 # Getting Help
 
