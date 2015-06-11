@@ -51,9 +51,8 @@ online curriculum. Here's a brief description of examples provided in this repos
 - **ir_temp_example** - This sketch takes an IR temperature reading every 5 seconds and prints the 
     results to the Serial Monitor. If the temperature detected is over 28.5 C, it turns on a pin 13
     LED.
-- **accel_rattle** - This example "listens" for shakes using the accelerometer and will play from a
-    set of sounds depending on the state. A simple push button is used to cycle through four states.
-    This sketch is designed to work with the
+- **accel_rattle** - This example "listens" for shakes using the accelerometer and will play from a set
+    of sounds. This sketch is designed to work with the
     [Experiment Platform Drum Kit](http://experiments.ardusat.com/#/sensors/drum-kit).
 - **gyro_scales** - This example plays scales of a specific instrument depending on the gyroscope
     readings for rotational velocities. Negative velocities play down the scale and positive velocities
@@ -67,7 +66,12 @@ online curriculum. Here's a brief description of examples provided in this repos
     magnetic force. The magnetometer was placed above a rig with a magnet taped to the center of a
     stretched rubber band. This sketch is designed to work with the
     [Experiment Platform Drum Kit](http://experiments.ardusat.com/#/sensors/drum-kit).
-- **sine_wave** - Example that plots a sine wave and uses the generic valueToJSON formating from Ardusat experiment platform.  Requires no wiring of sensors to demonstrate the graphing, logging and Theremin view.  Learn out the Arduin    o Math library <http://www.arduino.cc/en/Math/H>
+- **sine_wave** - This example that plots a sine wave and uses the generic valueToJSON formating from Ardusat
+    experiment platform. Requires no wiring of sensors to demonstrate the graphing, logging and Theremin
+    view. Learn about the Arduino Math library <http://www.arduino.cc/en/Math/H>
+- **imu_all_sensors** - This example returns json values for all of the sensors available from just the IMU.
+- **mary_had_a_little_lamb** - This example doesn't use any sensors, but demonstrates how to play
+    Mary Had a Little Lamb using an Arduino and the Ardusat Experiment Platform.
 
 # Getting Help
 
