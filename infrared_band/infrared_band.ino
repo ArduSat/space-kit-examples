@@ -70,28 +70,28 @@ prog_char iB5[] = "e1";
 prog_char iB6[] = "f1";
 
 // Instrument three sounds
-prog_char iC1[] = "MusicalGlasses2";
-prog_char iC2[] = "MusicalGlasses3";
-prog_char iC3[] = "MusicalGlasses4";
-prog_char iC4[] = "MusicalGlasses5";
-prog_char iC5[] = "MusicalGlasses6";
-prog_char iC6[] = "MusicalGlasses7";
+prog_char iC1[] = "glass2";
+prog_char iC2[] = "glass3";
+prog_char iC3[] = "glass4";
+prog_char iC4[] = "glass5";
+prog_char iC5[] = "glass6";
+prog_char iC6[] = "glass7";
 
 // Instrument four sounds
-prog_char iD1[] = "TubaC2";
-prog_char iD2[] = "TubaD2";
-prog_char iD3[] = "TubaE2";
-prog_char iD4[] = "TubaA2";
-prog_char iD5[] = "TubaAb2";
-prog_char iD6[] = "TubaB2";
+prog_char iD1[] = "zelda1";
+prog_char iD2[] = "zelda2";
+prog_char iD3[] = "zelda3";
+prog_char iD4[] = "zelda4";
+prog_char iD5[] = "zelda5";
+prog_char iD6[] = "zelda1";
 
 // Instrument five sounds
-prog_char iE1[] = "AltoSaxF4";
-prog_char iE2[] = "AltoSaxE4";
-prog_char iE3[] = "AltoSaxD4";
-prog_char iE4[] = "AltoSaxC4";
-prog_char iE5[] = "AltoSaxB4";
-prog_char iE6[] = "AltoSaxAb4";
+prog_char iE1[] = "sitar1";
+prog_char iE2[] = "sitar2";
+prog_char iE3[] = "sitar3";
+prog_char iE4[] = "sitar4";
+prog_char iE5[] = "sitar5";
+prog_char iE6[] = "sitar6";
 
 // Combine available sounds into less verbose structure
 // All arrays must have NUM_ELEMENTS elements
