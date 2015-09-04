@@ -17,8 +17,8 @@
  *        Version:  1.0
  *        Created:  09/01/2015
  *
- *         Author:  Sam Olds (sam@ardusat.com)
- *   Organization:  Ardusat
+ *         Author:  Your Name (your@email.com)
+ *   Organization:  Where You're From
  *
  * =====================================================================================
  */
