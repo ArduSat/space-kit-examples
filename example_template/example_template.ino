@@ -1,15 +1,12 @@
 /*
  * =====================================================================================
  *
- *       Filename:  imu_all_sensors.ino
+ *       Filename:  example_template.ino
  *
- *    Description:  Simple driver for all the sensors included in the Ardusat
- *                  Space Kit. Outputs all sensor values at a configurable 
- *                  interval in JSON format that can be read by the Ardusat 
- *                  Experiment Platform  (https://experiments.ardusat.com).
+ *    Description:  A template for how to design an example sketch.
  *
- *                  Example returns json values for all of the sensors available
- *                  from just the IMU.
+ *                  Use the Ardusat Experiment Platform to visualize your data!
+ *                  http://experiments.ardusat.com
  *
  *                  This example uses many third-party libraries available from
  *                  Adafruit (https://github.com/adafruit). These libraries are
@@ -17,12 +14,10 @@
  *
  *                  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        Version:  1.1
- *        Created:  10/29/2014
- *       Revision:  5/18/2015 - add BMP180 pressure and temp
- *       Compiler:  Arduino
+ *        Version:  1.0
+ *        Created:  09/01/2015
  *
- *         Author:  Ben Peters (ben@ardusat.com)
+ *         Author:  Sam Olds (sam@ardusat.com)
  *   Organization:  Ardusat
  *
  * =====================================================================================
@@ -45,14 +40,8 @@ ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 8, 9);
 /*-----------------------------------------------------------------------------
  *  Constant Definitions
  *-----------------------------------------------------------------------------*/
-const short READ_INTERVAL = 100; // interval, in ms, to wait between readings
-
-temperature_t temp;
+const int BEAT = 500;           // Time, in ms, to wait between logging
 acceleration_t accel;
-magnetic_t mag;
-gyro_t gyro;
-orientation_t orientation;
-pressure_t pressure;
 
 
 /* 
@@ -66,11 +55,7 @@ pressure_t pressure;
 void setup(void)
 {
   serialConnection.begin(9600);
-
   beginAccelerationSensor();
-  beginGyroSensor();
-  beginMagneticSensor();
-  beginBarometricPressureSensor();
 
   /* We're ready to go! */
   serialConnection.println("");
@@ -81,32 +66,37 @@ void setup(void)
  * ===  FUNCTION  ======================================================================
  *         Name:  loop
  *  Description:  After setup runs, this loop function runs until the Arduino loses 
- *                power or resets. We go through and update each of the attached sensors,
- *                write out the updated values in JSON format, then delay before repeating
- *                the loop again.
+ *                power or resets. We go through and read from each of the attached
+ *                sensors, write out the corresponding sounds in JSON format, then
+ *                delay before repeating the loop again.
  * =====================================================================================
  */
 void loop(void)
 {
   // Read Accelerometer
   readAcceleration(accel);
-  serialConnection.println(accelerationToJSON("accelerometer", accel));
 
-  // Read Magnetometer
-  readMagnetic(mag);
-  serialConnection.println(magneticToJSON("magnetic", mag));
+  if (accel.x > 5) {
+    other_function("value1");
+  } else if (accel.x < -5) {
+    other_function("value2");
+  } else {
+    other_function("value3");
+  }
 
-  // Read Gyro
-  readGyro(gyro);
-  serialConnection.println(gyroToJSON("gyro", gyro));
+  delay(BEAT);
+}
 
-  // Calculate Orientation from Accel + Magnet data
-  calculateOrientation(accel, mag, orientation);
-  serialConnection.println(orientationToJSON("orientation", orientation));
-  
-  // Read BMP180 Barometer Pressure 
-  readBarometricPressure(pressure);
-  serialConnection.println(pressureToJSON("pressure", pressure));
 
-  delay(READ_INTERVAL);
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  other_function
+ *  Description:  This function takes a string and writes it to the serial connection
+ *                in JSON.
+ *   Parameters:  string: thing to print to serial connection
+ * =====================================================================================
+ */
+void other_function(const char * string)
+{
+  serialConnection.println(valueToJSON(string, DATA_UNIT_NONE, 1));
 }

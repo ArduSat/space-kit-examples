@@ -1,15 +1,16 @@
 /*
  * =====================================================================================
  *
- *       Filename:  imu_all_sensors.ino
+ *       Filename:  magnet_strum.ino
  *
- *    Description:  Simple driver for all the sensors included in the Ardusat
- *                  Space Kit. Outputs all sensor values at a configurable 
- *                  interval in JSON format that can be read by the Ardusat 
- *                  Experiment Platform  (https://experiments.ardusat.com).
+ *    Description:  Simple example for using the Space Kit to play audio using the 
+ *                  Sensor Drum Kit Example
+ *                  http://experiments.ardusat.com/#/sensors/drum-kit
  *
- *                  Example returns json values for all of the sensors available
- *                  from just the IMU.
+ *                  Example plays a sitar strum sound when within the presence of
+ *                  a strong enough magnetic force. The magnetometer was placed
+ *                  above a rig with a magnet taped to the center of a stretched
+ *                  rubber band.
  *
  *                  This example uses many third-party libraries available from
  *                  Adafruit (https://github.com/adafruit). These libraries are
@@ -17,12 +18,10 @@
  *
  *                  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        Version:  1.1
- *        Created:  10/29/2014
- *       Revision:  5/18/2015 - add BMP180 pressure and temp
- *       Compiler:  Arduino
+ *        Version:  1.0
+ *        Created:  5/14/2015
  *
- *         Author:  Ben Peters (ben@ardusat.com)
+ *         Author:  Sam Olds (sam@ardusat.com)
  *   Organization:  Ardusat
  *
  * =====================================================================================
@@ -34,6 +33,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <ArdusatSDK.h>
+#include <Math.h>
 
 /*-----------------------------------------------------------------------------
  *  Setup Software Serial to allow for both RF communication and USB communication
@@ -45,14 +45,9 @@ ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 8, 9);
 /*-----------------------------------------------------------------------------
  *  Constant Definitions
  *-----------------------------------------------------------------------------*/
-const short READ_INTERVAL = 100; // interval, in ms, to wait between readings
-
-temperature_t temp;
-acceleration_t accel;
+const int BEAT = 75;        // Time, in ms, to wait between logging
+unsigned long lastBeat = 0;
 magnetic_t mag;
-gyro_t gyro;
-orientation_t orientation;
-pressure_t pressure;
 
 
 /* 
@@ -66,11 +61,7 @@ pressure_t pressure;
 void setup(void)
 {
   serialConnection.begin(9600);
-
-  beginAccelerationSensor();
-  beginGyroSensor();
   beginMagneticSensor();
-  beginBarometricPressureSensor();
 
   /* We're ready to go! */
   serialConnection.println("");
@@ -81,32 +72,24 @@ void setup(void)
  * ===  FUNCTION  ======================================================================
  *         Name:  loop
  *  Description:  After setup runs, this loop function runs until the Arduino loses 
- *                power or resets. We go through and update each of the attached sensors,
- *                write out the updated values in JSON format, then delay before repeating
- *                the loop again.
+ *                power or resets. We go through and read from each of the attached
+ *                sensors, write out the corresponding sounds in JSON format, then
+ *                delay before repeating the loop again.
  * =====================================================================================
  */
 void loop(void)
 {
-  // Read Accelerometer
-  readAcceleration(accel);
-  serialConnection.println(accelerationToJSON("accelerometer", accel));
+  float mag_mag;
 
   // Read Magnetometer
   readMagnetic(mag);
-  serialConnection.println(magneticToJSON("magnetic", mag));
 
-  // Read Gyro
-  readGyro(gyro);
-  serialConnection.println(gyroToJSON("gyro", gyro));
+  // Calculate the magnetic magnitude
+  mag_mag = sqrt(mag.x * mag.x + mag.y * mag.y + mag.z * mag.z);
 
-  // Calculate Orientation from Accel + Magnet data
-  calculateOrientation(accel, mag, orientation);
-  serialConnection.println(orientationToJSON("orientation", orientation));
-  
-  // Read BMP180 Barometer Pressure 
-  readBarometricPressure(pressure);
-  serialConnection.println(pressureToJSON("pressure", pressure));
-
-  delay(READ_INTERVAL);
+  // Play the sound only once per BEAT when the magnetic magnitude is high enough
+  if (mag_mag > 111.0 && (millis() - lastBeat) > BEAT) {
+    serialConnection.println(valueToJSON("sitar1", DATA_UNIT_NONE, 1));
+    lastBeat = millis();
+  }
 }

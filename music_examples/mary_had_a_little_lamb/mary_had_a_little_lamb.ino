@@ -1,15 +1,10 @@
 /*
  * =====================================================================================
  *
- *       Filename:  imu_all_sensors.ino
+ *       Filename:  mary_had_a_little_lamb.ino
  *
- *    Description:  Simple driver for all the sensors included in the Ardusat
- *                  Space Kit. Outputs all sensor values at a configurable 
- *                  interval in JSON format that can be read by the Ardusat 
- *                  Experiment Platform  (https://experiments.ardusat.com).
- *
- *                  Example returns json values for all of the sensors available
- *                  from just the IMU.
+ *    Description:  Play 'Mary had a Little Lamb' with the Ardusat Experiment
+ *                  Platform! http://experiments.ardusat.com
  *
  *                  This example uses many third-party libraries available from
  *                  Adafruit (https://github.com/adafruit). These libraries are
@@ -17,12 +12,10 @@
  *
  *                  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        Version:  1.1
- *        Created:  10/29/2014
- *       Revision:  5/18/2015 - add BMP180 pressure and temp
- *       Compiler:  Arduino
+ *        Version:  1.0
+ *        Created:  05/18/2015
  *
- *         Author:  Ben Peters (ben@ardusat.com)
+ *         Author:  Kevin Cocco (kevin@ardusat.com)
  *   Organization:  Ardusat
  *
  * =====================================================================================
@@ -45,14 +38,12 @@ ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 8, 9);
 /*-----------------------------------------------------------------------------
  *  Constant Definitions
  *-----------------------------------------------------------------------------*/
-const short READ_INTERVAL = 100; // interval, in ms, to wait between readings
+const short NUM_SOUNDS = 8;  // Number of sounds
 
-temperature_t temp;
-acceleration_t accel;
-magnetic_t mag;
-gyro_t gyro;
-orientation_t orientation;
-pressure_t pressure;
+// Do Re Mi Fa So La Ti Do - C major scale
+const char * instr[NUM_SOUNDS] = {"c1", "d1", "e1", "f1", "g1", "a1", "b1", "c2"};
+const int quarterBeat = 500; // Milli Sec delay. BPM (Beats Per Min) 1 beat
+                             // per quarter note. 120 BPM 4/4 tempo
 
 
 /* 
@@ -66,14 +57,6 @@ pressure_t pressure;
 void setup(void)
 {
   serialConnection.begin(9600);
-
-  beginAccelerationSensor();
-  beginGyroSensor();
-  beginMagneticSensor();
-  beginBarometricPressureSensor();
-
-  /* We're ready to go! */
-  serialConnection.println("");
 }
 
 
@@ -81,32 +64,43 @@ void setup(void)
  * ===  FUNCTION  ======================================================================
  *         Name:  loop
  *  Description:  After setup runs, this loop function runs until the Arduino loses 
- *                power or resets. We go through and update each of the attached sensors,
- *                write out the updated values in JSON format, then delay before repeating
- *                the loop again.
+ *                power or resets. We go through and read from each of the attached
+ *                sensors, write out the corresponding sounds in JSON format, then
+ *                delay before repeating the loop again.
  * =====================================================================================
  */
 void loop(void)
 {
-  // Read Accelerometer
-  readAcceleration(accel);
-  serialConnection.println(accelerationToJSON("accelerometer", accel));
+  // Play MA-RY HAD A LIT-TLE LAMB
+  play_note(instr[2], 1);
+  play_note(instr[1], 1);
+  play_note(instr[0], 1);
+  play_note(instr[1], 1);
+  play_note(instr[2], 1);
+  play_note(instr[2], 1);
+  play_note(instr[2], 2);
 
-  // Read Magnetometer
-  readMagnetic(mag);
-  serialConnection.println(magneticToJSON("magnetic", mag));
+  // Play LIT-TLE LAMB, LIT-TLE LAMB
+  play_note(instr[1], 1);
+  play_note(instr[1], 1);
+  play_note(instr[1], 2);
+  play_note(instr[2], 1);
+  play_note(instr[2], 1);
+  play_note(instr[2], 2);
+}
 
-  // Read Gyro
-  readGyro(gyro);
-  serialConnection.println(gyroToJSON("gyro", gyro));
 
-  // Calculate Orientation from Accel + Magnet data
-  calculateOrientation(accel, mag, orientation);
-  serialConnection.println(orientationToJSON("orientation", orientation));
-  
-  // Read BMP180 Barometer Pressure 
-  readBarometricPressure(pressure);
-  serialConnection.println(pressureToJSON("pressure", pressure));
-
-  delay(READ_INTERVAL);
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  play_note
+ *  Description:  This function takes an instrument sound and writes it to the serial
+ *                connection in JSON and then delays for 'beats' quarterBeats.
+ *   Parameters:  sound: sound for a specific instrument
+ *                beats: number of beats to delay
+ * =====================================================================================
+ */
+void play_note(const char * sound, int beats)
+{
+  serialConnection.println(valueToJSON(sound, DATA_UNIT_NONE, 1));
+  delay(quarterBeat * beats)
 }
