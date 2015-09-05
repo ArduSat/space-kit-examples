@@ -102,5 +102,5 @@ void loop(void)
 void play_note(const char * sound, int beats)
 {
   serialConnection.println(valueToJSON(sound, DATA_UNIT_NONE, 1));
-  delay(quarterBeat * beats)
+  delay(quarterBeat * beats);
 }
