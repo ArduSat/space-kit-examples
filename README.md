@@ -39,6 +39,8 @@ online curriculum. Here's a brief description of examples provided in this repos
       music. It does this by detecting "shake" events as shown by the total magnitude of acceleration,
       then assigning a different instrument from a 5 piece drum kit sound library to each physical
       axis.
+  - **g_force_test** - Measures the maximum G Force created when shaking an accelerometer for 3 seconds and
+      then plays notes corresponding to the highest force recorded.
   - **gyro_scales** - This example plays scales of a specific instrument depending on the gyroscope
       readings for rotational velocities. Negative velocities play down the scale and positive velocities
       play up the scale.
