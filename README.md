@@ -27,6 +27,7 @@ online curriculum. Here's a brief description of examples provided in this repos
 
 - **air_quality** - Example sketch that uses a PPD60 air quality sensor and calibration performed by
     our friends at [Many Labs](http://www.manylabs.org/) to measure and log PM2.5 air quality.
+- **egg_drop** - Logs accelerometer data to an SD card for use with an egg drop experiment.
 - **example_template** - An example style template to use if you are interested in contributing a
     sketch.
 - **imu_all_sensors** - This example returns json values for all of the sensors available from just the IMU.
@@ -51,6 +52,8 @@ online curriculum. Here's a brief description of examples provided in this repos
       Mary Had a Little Lamb using an Arduino and the Ardusat Experiment Platform.
 - **sine_wave** - This example plots a sine wave and uses the generic valueToJSON formatting. Requires no
     wiring of sensors to demonstrate the graphing, logging, and Theremin view.
+- **zombie_detector** - Uses luminosity and infrared thermometer sensor readings to turn an LED light on or
+    off.
 
 ## Getting Help
 If you're having trouble running the examples, chances are something is messed up with the external
