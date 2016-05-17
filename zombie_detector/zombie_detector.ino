@@ -46,8 +46,8 @@ const int RED_LIGHT_PIN = 9;
 
 int baselineTemp = 0;
 int baselineLight = 0;
-luminosity_t lum;
-temperature_t temp;
+Luminosity lum;
+Temperature temp = Temperature(SENSORID_MLX90614);
 
 
 /* 
@@ -64,26 +64,21 @@ void setup(void)
   pinMode(GREEN_LIGHT_PIN, OUTPUT);
   pinMode(RED_LIGHT_PIN, OUTPUT);
 
-  if (!beginInfraredTemperatureSensor()) {
-    serialConnection.println("Can't initialize IR temp sensor! Check your wiring.");
-  }
-
-  if (!beginLuminositySensor()) {
-    serialConnection.println("Can't initialize luminosity sensor! Check your wiring.");
-  }
+  temp.begin();
+  lum.begin();
 
   toggle_green_and_red_lights(true, true);
 
-  readInfraredTemperature(temp);
-  readLuminosity(lum);
+  temp.read();
+  lum.read();
 
   baselineLight = lum.lux;
   baselineTemp = temp.t;
 
   int i;
   for (i = 0; i < 100; i++) {
-    readInfraredTemperature(temp);
-    readLuminosity(lum);
+    temp.read();
+    lum.read();
 
     baselineLight += lum.lux;
     baselineTemp += temp.t;
@@ -111,11 +106,8 @@ void setup(void)
 void loop(void)
 {
   // Read Temperature and Luminosity
-  readInfraredTemperature(temp);
-  readLuminosity(lum);
-
-  serialConnection.println(temperatureToJSON("infared", temp));
-  serialConnection.println(luminosityToJSON("luminosity", lum));
+  serialConnection.println(temp.readToJSON("infrared"));
+  serialConnection.println(lum.readToJSON("luminosity"));
 
   if (lum.lux <= (baselineLight * .6)) {
 

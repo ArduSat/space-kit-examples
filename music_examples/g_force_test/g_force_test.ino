@@ -45,7 +45,7 @@ const float wakeForce = 1.5;  // G-Force required to wake
 const float earthGrav = 9.8;  // Gravitational force exerted by Earth
 const int delayTime = 500;    // Time in milliseconds to check for wake shake
 const float shakeTime = 3.0;  // Time in seconds to listen for max shake 
-acceleration_t accel;
+Acceleration accel;
 float g_force;
 
 char wholeBuf[5] = {0};
@@ -63,7 +63,7 @@ char pointBuf[5] = {0};
 void setup(void)
 {
   serialConnection.begin(9600);
-  beginAccelerationSensor();
+  accel.begin();
 
   /* We're ready to go! */
   serialConnection.println("");
@@ -83,7 +83,7 @@ void setup(void)
 void loop(void)
 {
   // Read Accelerometer
-  readAcceleration(accel);
+  accel.read();
 
   // Calculate the acceleration magnitude
   g_force = sqrt(accel.x * accel.x + accel.y * accel.y + accel.z * accel.z) / earthGrav;
@@ -124,7 +124,7 @@ void record_max_shake(void)
   startTime = millis();
     
   while ((millis() - startTime) < listenTime) {
-    readAcceleration(accel);
+    accel.read();
     gForce = sqrt(accel.x * accel.x + accel.y * accel.y + accel.z * accel.z) / earthGrav;
     maxShake = max(gForce, maxShake);
   }

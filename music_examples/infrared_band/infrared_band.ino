@@ -50,8 +50,8 @@ const short NUM_ELEMENTS = 6;   // Number of sounds per instrument
 const float EXP_MAX = 65.0;     // Assumed maximum temperature reading in Celsius
 const float EXP_MIN = 5.0;      // Assumed minimum temperature reading in Celsius
 
-temperature_t temp;
-acceleration_t accel;
+Acceleration accel;
+Temperature temp = Temperature(SENSORID_MLX90614);
 
 // See link for PROGMEM documentation
 // http://www.arduino.cc/en/Reference/PROGMEM
@@ -120,8 +120,8 @@ bool played = false;
 void setup(void)
 {
   serialConnection.begin(9600);
-  beginInfraredTemperatureSensor();
-  beginAccelerationSensor();
+  accel.begin();
+  temp.begin();
 
   /* We're ready to go! */
   serialConnection.println("");
@@ -142,8 +142,9 @@ void loop(void)
   float infrared_temp;
   
   // Read infrared temp sensor and acceleration
-  readInfraredTemperature(temp);
-  readAcceleration(accel);
+  accel.read();
+  temp.read();
+
   infrared_temp = temp.t;
   
   // Only play a sound once per BEAT
@@ -168,7 +169,7 @@ void loop(void)
   if (millis() - lastBeat > BEAT) {
     // Only return temperature values if the Demosat is not upright
     if (accel.z < 8) {
-      serialConnection.println(temperatureToJSON("temperature", temp));
+      serialConnection.println(temp.toJSON("temperature"));
     }
     lastBeat = millis();
     played = false;

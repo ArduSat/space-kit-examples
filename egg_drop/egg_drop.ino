@@ -45,7 +45,7 @@ ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 8, 9);
 const short SD_CS_PIN = 10;     // pin used for SD card reader
 const char LOG_FILE_PREFIX[] = "MYLOG";
 const bool LOG_CSV_DATA = true; // otherwise log binary data to save space
-acceleration_t accel;
+Acceleration accel;
 
 
 /* 
@@ -65,7 +65,7 @@ void setup(void)
     while (true);
   }
 
-  beginAccelerationSensor();
+  accel.begin();
 
   /* We're ready to go! */
   serialConnection.println("");
@@ -84,11 +84,11 @@ void setup(void)
 void loop(void)
 {
   // Read Accelerometer
-  readAcceleration(accel);
+  accel.read();
 
   if (LOG_CSV_DATA) {
-    logAcceleration("accelerometer", accel);
+    logSensor("accelerometer", accel);
   } else {
-    binaryLogAcceleration(0, accel);
+    binaryLogSensor(0, accel);
   }
 }

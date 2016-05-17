@@ -47,7 +47,7 @@ ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 8, 9);
  *-----------------------------------------------------------------------------*/
 const int BEAT = 75;        // Time, in ms, to wait between logging
 unsigned long lastBeat = 0;
-magnetic_t mag;
+Magnetic mag;
 
 
 /* 
@@ -61,7 +61,7 @@ magnetic_t mag;
 void setup(void)
 {
   serialConnection.begin(9600);
-  beginMagneticSensor();
+  mag.begin();
 
   /* We're ready to go! */
   serialConnection.println("");
@@ -82,7 +82,7 @@ void loop(void)
   float mag_mag;
 
   // Read Magnetometer
-  readMagnetic(mag);
+  mag.read();
 
   // Calculate the magnetic magnitude
   mag_mag = sqrt(mag.x * mag.x + mag.y * mag.y + mag.z * mag.z);

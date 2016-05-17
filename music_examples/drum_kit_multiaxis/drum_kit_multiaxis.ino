@@ -47,8 +47,8 @@ const int BEAT = 500; // 4/4 8ths interval, in ms, to wait between readings
 unsigned long lastBeat = 0;
 bool playedSnare = false;
 float infrared_temp_last = 0;
-acceleration_t accel;
-temperature_t temp;
+Acceleration accel;
+Temperature temp = Temperature(SENSORID_MLX90614);
 
 
 /*
@@ -63,8 +63,8 @@ void setup(void)
 {
   serialConnection.begin(9600);
 
-  beginAccelerationSensor();
-  beginInfraredTemperatureSensor();
+  accel.begin();
+  temp.begin();
 
   /* We're ready to go! */
   serialConnection.println("");
@@ -87,7 +87,8 @@ void loop(void)
   float infrared_temp;
 
   // Read MLX Infrared temp sensor
-  readInfraredTemperature(temp);
+  temp.read();
+
   infrared_temp = temp.t;
   if ((infrared_temp_last + 4) < infrared_temp) {
     serialConnection.println(valueToJSON("snare", DATA_UNIT_NONE, 1));
@@ -95,7 +96,7 @@ void loop(void)
   infrared_temp_last = infrared_temp;
 
   // Read Accelerometer
-  readAcceleration(accel);
+  accel.read();
 
   // Calculate the acceleration magnitude
   accel_mag = sqrt(accel.x * accel.x + accel.y * accel.y + accel.z * accel.z);

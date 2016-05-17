@@ -50,7 +50,7 @@ const short NUM_Z_ELEMENTS = 11;   // Number of sounds per instrument Z
 const int BEAT = 100;              // Time, in ms, to wait between logging
 unsigned long lastBeat = 0;
 
-gyro_t gyro;
+Gyro gyro;
 
 // See link for PROGMEM documentation:
 // http://www.arduino.cc/en/Reference/PROGMEM
@@ -112,7 +112,7 @@ const float EXP_MIN = -5.0;
 void setup(void)
 {
   serialConnection.begin(9600);
-  beginGyroSensor();
+  gyro.begin();
 
   /* We're ready to go! */
   serialConnection.println("");
@@ -131,7 +131,7 @@ void setup(void)
 void loop(void)
 {
   float max_spin_mag;
-  readGyro(gyro);
+  gyro.read();
 
   // Get the max absolute value among the gyro readings per axis
   max_spin_mag = max(max(fabs(gyro.x), fabs(gyro.y)), max(fabs(gyro.x), fabs(gyro.z)));

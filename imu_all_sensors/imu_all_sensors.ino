@@ -46,14 +46,12 @@ ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 8, 9);
  *  Constant Definitions
  *-----------------------------------------------------------------------------*/
 const short READ_INTERVAL = 100; // interval, in ms, to wait between readings
-
-temperature_t temp;
-acceleration_t accel;
-magnetic_t mag;
-gyro_t gyro;
-orientation_t orientation;
-pressure_t pressure;
-
+Acceleration accel;
+Gyro gyro;
+Magnetic mag;
+Orientation orient;
+Pressure press;
+Temperature temp;
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -67,10 +65,12 @@ void setup(void)
 {
   serialConnection.begin(9600);
 
-  beginAccelerationSensor();
-  beginGyroSensor();
-  beginMagneticSensor();
-  beginBarometricPressureSensor();
+  accel.begin();
+  gyro.begin();
+  mag.begin();
+  orient.begin(accel, mag);
+  press.begin();
+  temp.begin();
 
   /* We're ready to go! */
   serialConnection.println("");
@@ -89,24 +89,19 @@ void setup(void)
 void loop(void)
 {
   // Read Accelerometer
-  readAcceleration(accel);
-  serialConnection.println(accelerationToJSON("accelerometer", accel));
+  serialConnection.println(accel.readToJSON());
 
   // Read Magnetometer
-  readMagnetic(mag);
-  serialConnection.println(magneticToJSON("magnetic", mag));
+  serialConnection.println(mag.readToJSON());
 
   // Read Gyro
-  readGyro(gyro);
-  serialConnection.println(gyroToJSON("gyro", gyro));
+  serialConnection.println(gyro.readToJSON());
 
   // Calculate Orientation from Accel + Magnet data
-  calculateOrientation(accel, mag, orientation);
-  serialConnection.println(orientationToJSON("orientation", orientation));
+  serialConnection.println(orient.readToJSON());
   
   // Read BMP180 Barometer Pressure 
-  readBarometricPressure(pressure);
-  serialConnection.println(pressureToJSON("pressure", pressure));
+  serialConnection.println(press.readToJSON());
 
   delay(READ_INTERVAL);
 }

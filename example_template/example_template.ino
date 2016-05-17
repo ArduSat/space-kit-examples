@@ -41,7 +41,7 @@ ArdusatSerial serialConnection(SERIAL_MODE_HARDWARE_AND_SOFTWARE, 8, 9);
  *  Constant Definitions
  *-----------------------------------------------------------------------------*/
 const int BEAT = 500;           // Time, in ms, to wait between logging
-acceleration_t accel;
+Acceleration accel;
 
 
 /* 
@@ -55,7 +55,7 @@ acceleration_t accel;
 void setup(void)
 {
   serialConnection.begin(9600);
-  beginAccelerationSensor();
+  accel.begin();
 
   /* We're ready to go! */
   serialConnection.println("");
@@ -74,7 +74,7 @@ void setup(void)
 void loop(void)
 {
   // Read Accelerometer
-  readAcceleration(accel);
+  accel.read();
 
   if (accel.x > 5) {
     other_function("value1");

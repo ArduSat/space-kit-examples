@@ -54,7 +54,7 @@ const char* instr[NUM_ELEMENTS] = {"snare", "hihat", "tom1", "tom2", "tom3", "ki
 
 unsigned long lastBeat = 0;
 bool played = false;
-acceleration_t accel;
+Acceleration accel;
 float accel_mag;
 
 
@@ -69,7 +69,7 @@ float accel_mag;
 void setup(void)
 {
   serialConnection.begin(9600);
-  beginAccelerationSensor();
+  accel.begin();
 
   /* We're ready to go! */
   serialConnection.println("");
@@ -88,7 +88,7 @@ void setup(void)
 void loop(void)
 {
   // Read Accelerometer
-  readAcceleration(accel);
+  accel.read();
 
   // Calculate the acceleration magnitude
   accel_mag = sqrt(accel.x * accel.x + accel.y * accel.y + accel.z * accel.z);
