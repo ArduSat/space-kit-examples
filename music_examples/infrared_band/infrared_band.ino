@@ -51,7 +51,7 @@ const float EXP_MAX = 65.0;     // Assumed maximum temperature reading in Celsiu
 const float EXP_MIN = 5.0;      // Assumed minimum temperature reading in Celsius
 
 Acceleration accel;
-Temperature temp = Temperature(SENSORID_MLX90614);
+TemperatureMLX temp;
 
 // See link for PROGMEM documentation
 // http://www.arduino.cc/en/Reference/PROGMEM

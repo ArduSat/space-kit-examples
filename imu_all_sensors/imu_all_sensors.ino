@@ -49,7 +49,7 @@ const short READ_INTERVAL = 100; // interval, in ms, to wait between readings
 Acceleration accel;
 Gyro gyro;
 Magnetic mag;
-Orientation orient;
+Orientation orient(accel, mag);
 Pressure press;
 Temperature temp;
 
@@ -68,7 +68,7 @@ void setup(void)
   accel.begin();
   gyro.begin();
   mag.begin();
-  orient.begin(accel, mag);
+  orient.begin();
   press.begin();
   temp.begin();
 
@@ -89,19 +89,22 @@ void setup(void)
 void loop(void)
 {
   // Read Accelerometer
-  serialConnection.println(accel.readToJSON());
-
-  // Read Magnetometer
-  serialConnection.println(mag.readToJSON());
+  serialConnection.println(accel.readToJSON("accel"));
 
   // Read Gyro
-  serialConnection.println(gyro.readToJSON());
+  serialConnection.println(gyro.readToJSON("gyro"));
+
+  // Read Magnetometer
+  serialConnection.println(mag.readToJSON("mag"));
 
   // Calculate Orientation from Accel + Magnet data
-  serialConnection.println(orient.readToJSON());
+  serialConnection.println(orient.readToJSON("orient"));
   
   // Read BMP180 Barometer Pressure 
-  serialConnection.println(press.readToJSON());
+  serialConnection.println(press.readToJSON("pressure"));
+
+  // Read Ambient Temperature
+  serialConnection.println(temp.readToJSON("temp"));
 
   delay(READ_INTERVAL);
 }

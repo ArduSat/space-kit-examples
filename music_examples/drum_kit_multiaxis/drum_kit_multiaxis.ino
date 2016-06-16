@@ -48,7 +48,7 @@ unsigned long lastBeat = 0;
 bool playedSnare = false;
 float infrared_temp_last = 0;
 Acceleration accel;
-Temperature temp = Temperature(SENSORID_MLX90614);
+TemperatureMLX temp;
 
 
 /*

@@ -47,7 +47,7 @@ const int RED_LIGHT_PIN = 9;
 int baselineTemp = 0;
 int baselineLight = 0;
 Luminosity lum;
-Temperature temp = Temperature(SENSORID_MLX90614);
+TemperatureMLX temp;
 
 
 /* 
@@ -64,8 +64,8 @@ void setup(void)
   pinMode(GREEN_LIGHT_PIN, OUTPUT);
   pinMode(RED_LIGHT_PIN, OUTPUT);
 
-  temp.begin();
   lum.begin();
+  temp.begin();
 
   toggle_green_and_red_lights(true, true);
 
